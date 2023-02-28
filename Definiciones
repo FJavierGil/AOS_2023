@@ -1,0 +1,23 @@
+* Plataformas
+    - Espacio asignado a un avión en el aeropuerto
+* Aeronaves
+    - ...
+
+Operaciones:
+    - CRUD Plataformas
+    - CRUD Aviones
+
+Paths:
+    - /api/v1/plataformas
+        - GET
+        - CGET
+        - POST
+        - PUT
+        - OPTIONS
+        - DELETE
+    - /api/v1/aviones
+        - GET
+        - CGET
+        - POST
+        - PUT
+        - OPTIONS
