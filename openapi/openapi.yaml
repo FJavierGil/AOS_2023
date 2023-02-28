@@ -1,5 +1,47 @@
 openapi: 3.1.0
 info:
-  title: API REST para la gestión de plataformas y aviones
   version: 0.0.1
-paths: {} # No endpoints defined
+  title: API REST para la gestión de plataformas y aviones
+  description: >
+    [AOS 2023] API REST para la gestión de plataformas y aviones ...
+
+paths:
+  /api/v1/plataformas:
+    get:
+      summary: Obtiene todas las plataformas
+      description: |
+        La siguiente tabla define los códigos de estado que puede devolver este endpoint
+        
+        | Status Code | Descripción | Motivo                             |
+        | ------------| ------------| -----------------------------------|
+        | **200**     | OK          | Hay plataformas                    |
+        | **404**     | NOT FOUND   | No hay ninguna plataforma          |
+      operationId: plataforma_cget
+      responses:
+        '200':
+          description: Lista de plataformas disponibles
+          headers:
+            ETag:
+              $ref: '#/components/headers/ETag'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  plataformas:
+                    description: array de plataformas
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Plataforma'
+        '404':
+          $ref: '#/components/responses/Response_404'
+
+
+
+
+components:
+  schemas:
+    Plataforma:
+
+  responses:
+    Response_404:
