@@ -1,9 +1,9 @@
-openapi: 3.1.0
+openapi: 3.0.2
 info:
-  version: 0.0.1
-  title: API REST para la gestión de plataformas y aviones
+  version: 0.0.2
+  title: 🛬API REST para la gestión de plataformas y aviones 🛫
   description: >
-    [AOS 2023] API REST para la gestión de plataformas y aviones ...
+    [AOS 2023] ✈️ API REST para la gestión de plataformas y aviones.
 
 paths:
   /api/v1/plataformas:
@@ -14,7 +14,7 @@ paths:
         
         | Status Code | Descripción | Motivo                             |
         | ------------| ------------| -----------------------------------|
-        | **200**     | OK          | Hay plataformas                    |
+        | **200**     | OK          | Listado de plataformas             |
         | **404**     | NOT FOUND   | No hay ninguna plataforma          |
       operationId: plataforma_cget
       responses:
@@ -36,12 +36,83 @@ paths:
         '404':
           $ref: '#/components/responses/Response_404'
 
-
-
-
 components:
   schemas:
     Plataforma:
+      title: Plataforma del aeropuerto
+      type: object
+      properties:
+        plataforma:
+          type: object
+          description: 'Identificador único de la plataforma'
+          required:
+            - id
+          properties:
+            id:
+              type: integer
+              format: int32
+              description: Identificador único de la plataforma
+              readOnly: true
+          # Añadir resto de propiedades
+      example:
+        plataforma:
+          id: P01-001-A
+      examples:
+        plataforma-example:
+          $ref: '#/components/examples/plataforma-example'
+
+    HTTP_Problem:
+      title: Mensaje HTTP
+      type: object
+      properties:
+        code:
+          description: 'Código de Estado de la respuesta'
+          type: integer
+          format: int64
+        message:
+          description: 'Mensaje de Texto asociado a la respuesta'
+          type: string
+
+  headers:
+    ETag:
+      description: "Entity Tag (identificador único proporcionado para validación de caché)"
+      schema:
+        type: string
+        pattern: "[0-9a-f]*"
+        # https://github.com/marak/Faker.js#api-methods
+        x-faker: random.uuid
+        example:
+          33a64df551425fcc
+    Allow:
+      description: Lista de métodos HTTP soportados
+      schema:
+        type: string
+      example: GET, DELETE, PUT, OPTIONS
+    Location:
+      description: '`URI` del nuevo recurso'
+      schema:
+        type: string
+        format: uri
+        x-faker: internet.url
+        example:
+          https://example.com//api/v1/plataformas/1936
 
   responses:
     Response_404:
+      description: '`NOT FOUND`: recurso no disponible'
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/HTTP_Problem'
+          examples:
+            response-http-404:
+              $ref: '#/components/examples/response-http-404'
+
+  examples:
+    response-http-404:
+      value:
+        code: 404
+        message: El recurso solicitado no está disponible.
+    plataforma-example:
+      value:
+        id: P01-001-A
