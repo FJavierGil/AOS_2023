@@ -1,0 +1,1 @@
+docker run -p 8000:8080 --rm --name aos2023_ui -e SWAGGER_JSON=/aos/openapi.yaml -v C:\xampp\htdocs\AOS\AOS_2023\openapi:/aos swaggerapi/swagger-ui

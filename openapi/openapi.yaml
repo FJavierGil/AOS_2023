@@ -95,7 +95,7 @@ components:
         format: uri
         x-faker: internet.url
         example:
-          https://example.com//api/v1/plataformas/1936
+          https://example.com/api/v1/plataformas/1936
 
   responses:
     Response_404:
