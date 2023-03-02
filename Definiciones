@@ -1,5 +1,13 @@
 * Plataformas
     - Espacio asignado a un avión en el aeropuerto
+    - Propiedades
+        - id
+        - tamaño:
+        - estado: (enum)
+            - Libre
+            - Ocupado
+            - Reservado
+            - Inhabilitado
 * Aeronaves
     - ...
 
