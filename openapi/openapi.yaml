@@ -1,9 +1,9 @@
-openapi: 3.0.2
+openapi: 3.0.3
 info:
-  version: 0.0.2
-  title: 🛬API REST para la gestión de plataformas y aviones 🛫
+  version: 0.1.0
+  title: 🛬[AOS 2023] Plataformas y Aeronaves 🛫
   description: >
-    [AOS 2023] ✈️ API REST para la gestión de plataformas y aviones.
+    ## **[AOS 2023]** ✈️ API REST para la gestión de Plataformas y Aeronaves.
 
 paths:
   /api/v1/plataformas:
@@ -33,33 +33,83 @@ paths:
                     type: array
                     items:
                       $ref: '#/components/schemas/Plataforma'
+              examples:
+                plataformas-example:
+                  $ref: '#/components/examples/plataformas-example'
         '404':
           $ref: '#/components/responses/Response_404'
 
 components:
   schemas:
     Plataforma:
-      title: Plataforma del aeropuerto
+      title: Plataforma de estacionamiento de Aeronaves
+      description: >
+        Área definida, en un aeródromo terrestre, destinada a dar cabida a
+        las aeronaves para los fines de embarque o desembarque del pasaje,
+        correo o carga, reabastecimiento de combustible, estacionamiento o
+        mantenimiento incluyendo calles de rodaje en plataforma, calles de
+        acceso al puesto de estacionamiento y vías de servicio.<br>
+        Reglamento de la Circulación Aérea Operativa (BOE-A-1994-18714)
       type: object
       properties:
         plataforma:
           type: object
-          description: 'Identificador único de la plataforma'
           required:
-            - id
+            - id, tipo_envergadura
           properties:
             id:
-              type: integer
-              format: int32
-              description: Identificador único de la plataforma
-              readOnly: true
-          # Añadir resto de propiedades
-      example:
-        plataforma:
-          id: P01-001-A
-      examples:
-        plataforma-example:
-          $ref: '#/components/examples/plataforma-example'
+              $ref: '#/components/schemas/Id_Plataforma'
+            tipo_envergadura:
+              $ref: '#/components/schemas/Envergadura_Aeronave'
+            estado:
+              $ref: '#/components/schemas/Estados_Plataformas'
+            # Añadir resto de propiedades
+      example: { "plataforma": { "id": "P01-001-A", "tipo_envergadura": "C", "estado": "Reservada"}}
+
+    Aeronave:
+      description: >
+        Toda máquina que puede desplazarse en la atmósfera por reacciones del aire que
+        no sean las reacciones del mismo contra la superficie de la tierra.<br>
+        OACI - Organización de Aviación Civil Internacional
+      type: object
+      properties:
+        matrícula:
+          description: Matrícula de la aeronave
+          type: string
+          pattern: "^[A-Z]{1,2}-[A-Z]{3}$"
+          example: "EC-JGR"
+        envergadura:
+          $ref: '#/components/schemas/Envergadura_Aeronave'
+      example: { "aeronave": { "matrícula": "EC-JGR", "envergadura": "B" }}
+
+    Id_Plataforma:
+      title: Identificador único de la plataforma
+      type: string
+      pattern: "^[A-Z]{1}[0-9]{2}-[0-9]{3}-[A-Z]$"
+      example: "P01-001-A"
+
+    Envergadura_Aeronave:
+      # https://es.wikipedia.org/wiki/C%C3%B3digo_de_referencia_aeroportuario
+      description: |
+        Clasificación las aeronaves por su envergadura:
+        * `A`: hasta 15 m - Cessna 172, Diamond DA40
+        * `B`: de 15 m a 24 m - Saab 340
+        * `C`: de 24 m a 36 m - McDonnell Douglas MD-81, Airbus A318, Airbus A319, Airbus A320, Airbus A321, Boeing 737
+        * `D`: de 36 m a 52 m - McDonnell Douglas MD-11, Airbus A300, Boeing 757, Boeing 767
+        * `E`: de 52 m a 65 m - Airbus A330, Airbus A340, Boeing 747, Boeing 777, Boeing 787, Airbus A350
+        * `F`: de 65 m a 80 m - Airbus A380, Boeing 747-8i.
+      type: string
+      enum: [ A, B, C, D, E, F ]
+
+    Estados_Plataformas:
+      description: |
+        Estado de la Plataforma:
+        * `Libre`: Plataforma disponible
+        * `Ocupada`: Plataforma ocupada
+        * `Reservada`: Plataforma reservada para próxima utilización
+        * `Inhabilitada`: Plataforma inhabilitada para su uso
+      type: string
+      enum: [ "Libre", "Ocupada", "Reservada", "Inhabilitada" ]
 
     HTTP_Problem:
       title: Mensaje HTTP
@@ -113,6 +163,8 @@ components:
       value:
         code: 404
         message: El recurso solicitado no está disponible.
-    plataforma-example:
+    plataformas-example:
       value:
-        id: P01-001-A
+        plataformas:
+          - { "plataforma": { "id": "P01-001-A", "tipo_envergadura": "C", "estado": "Reservada"} }
+          - { "plataforma": { "id": "P02-039-C", "tipo_envergadura": "E", "estado": "Libre"} }
