@@ -81,12 +81,16 @@ components:
         envergadura:
           $ref: '#/components/schemas/Envergadura_Aeronave'
       example: { "aeronave": { "matrícula": "EC-JGR", "envergadura": "B" }}
+      # https://v6.fakerjs.dev/guide/
+      x-faker: helpers.regexpStyleStringParse('P[10-99]-[100-999]-X')
 
     Id_Plataforma:
       title: Identificador único de la plataforma
       type: string
       pattern: "^[A-Z]{1}[0-9]{2}-[0-9]{3}-[A-Z]$"
       example: "P01-001-A"
+      # https://v6.fakerjs.dev/guide/
+      x-faker: helpers.regexpStyleStringParse('P[10-99]-[100-999]-X')
 
     Envergadura_Aeronave:
       # https://es.wikipedia.org/wiki/C%C3%B3digo_de_referencia_aeroportuario
@@ -100,6 +104,8 @@ components:
         * `F`: de 65 m a 80 m - Airbus A380, Boeing 747-8i.
       type: string
       enum: [ A, B, C, D, E, F ]
+      # https://v6.fakerjs.dev/guide/
+      x-faker: helpers.arrayElement([ 'A', 'B', 'C', 'D', 'E', 'F' ])
 
     Estados_Plataformas:
       description: |
@@ -110,6 +116,8 @@ components:
         * `Inhabilitada`: Plataforma inhabilitada para su uso
       type: string
       enum: [ "Libre", "Ocupada", "Reservada", "Inhabilitada" ]
+      # https://v6.fakerjs.dev/guide/
+      x-faker: helpers.arrayElement([ 'Libre', 'Ocupada', 'Reservada', 'Inhabilitada' ])
 
     HTTP_Problem:
       type: object
@@ -145,8 +153,8 @@ components:
       schema:
         type: string
         pattern: "[0-9a-f]*"
-        # https://github.com/marak/Faker.js#api-methods
-        x-faker: random.uuid
+        # https://v6.fakerjs.dev/guide/
+        x-faker: datatype.uuid()
         example:
           33a64df551425fcc
     Allow:
