@@ -17,6 +17,8 @@ servers:
 tags:
   - name: '🛬 Plataforma'
     description: Plataforma
+  - name: '🛩️ Aeronave'
+    description: Aeronave
 
 paths:
   /plataforma:
