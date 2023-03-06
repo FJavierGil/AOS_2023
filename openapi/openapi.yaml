@@ -101,6 +101,23 @@ paths:
                 $ref: '#/components/schemas/Plataforma'
         '404':
           $ref: '#/components/responses/Response_404'
+    delete:
+      summary: Elimina la plataforma identificada por `plataformaId`
+      description: |
+        La siguiente tabla define los códigos de estado que puede devolver este endpoint
+        
+        | Status Code      | Descripción | Motivo                                    |
+        | ---------------- | ------------| ------------------------------------------|
+        | **204**          | NO CONTENT  | La plataforma existía y ha sido eliminada |
+        | **404**          | NOT FOUND   | Si la plataforma no existe                |
+      operationId: plataforma_delete
+      tags: [ '🛬 Plataforma' ]
+      responses:
+        '204':
+          description: Plataforma eliminada &lt;Cuerpo de la respuesta vacío&gt;
+        '404':
+          $ref: '#/components/responses/Response_404'
+
 
 components:
   schemas:
