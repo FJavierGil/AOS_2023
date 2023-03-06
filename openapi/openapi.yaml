@@ -112,16 +112,32 @@ components:
       enum: [ "Libre", "Ocupada", "Reservada", "Inhabilitada" ]
 
     HTTP_Problem:
-      title: Mensaje HTTP
       type: object
+      externalDocs:
+        url: https://tools.ietf.org/html/rfc7807
+      description: |
+        Problem Details for HTTP APIs
+        [https://tools.ietf.org/html/rfc7807](https://tools.ietf.org/html/rfc7807)
       properties:
-        code:
-          description: 'Código de Estado de la respuesta'
-          type: integer
-          format: int64
-        message:
-          description: 'Mensaje de Texto asociado a la respuesta'
+        type:
           type: string
+          format: uri
+          description: A URI reference [RFC3986] that identifies the problem type
+        title:
+          type: string
+          description: short human-readable summary of the problem type
+        status:
+          type: number
+          description: HTTP status code
+        detail:
+          type: string
+          description: Human-readable explanation specific to this occurrence of the problem
+        instance:
+          type: string
+          format: uri
+          description: "A URI reference that identifies the specific
+            occurrence of the problem.  It may or may not yield further
+            information if dereferenced"
 
   headers:
     ETag:
@@ -156,13 +172,16 @@ components:
             $ref: '#/components/schemas/HTTP_Problem'
           examples:
             response-http-404:
-              $ref: '#/components/examples/response-http-404'
+              $ref: '#/components/examples/example-response-http-404'
 
   examples:
-    response-http-404:
+    example-response-http-404:
       value:
-        code: 404
-        message: El recurso solicitado no está disponible.
+        type: https://httpstatuses.com/404
+        title: NOT FOUND
+        status: 404
+        detail: El recurso solicitado no está disponible.
+        instance: about:blank
     plataformas-example:
       value:
         plataformas:
