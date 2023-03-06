@@ -54,8 +54,7 @@ components:
       properties:
         plataforma:
           type: object
-          required:
-            - id, tipo_envergadura
+          required: [ id, tipo_envergadura ]
           properties:
             id:
               $ref: '#/components/schemas/Id_Plataforma'
@@ -73,13 +72,17 @@ components:
         OACI - Organización de Aviación Civil Internacional
       type: object
       properties:
-        matrícula:
-          description: Matrícula de la aeronave
-          type: string
-          pattern: "^[A-Z]{1,2}-[A-Z]{3}$"
-          example: "EC-JGR"
-        envergadura:
-          $ref: '#/components/schemas/Envergadura_Aeronave'
+        aeronave:
+          type: object
+          required: [ matrícula, envergadura ]
+          properties:
+            matrícula:
+              description: Matrícula de la aeronave
+              type: string
+              pattern: "^[A-Z]{1,2}-[A-Z]{3}$"
+              example: "EC-JGR"
+            envergadura:
+              $ref: '#/components/schemas/Envergadura_Aeronave'
       example: { "aeronave": { "matrícula": "EC-JGR", "envergadura": "B" }}
       # https://v6.fakerjs.dev/guide/
       x-faker: helpers.regexpStyleStringParse('P[10-99]-[100-999]-X')
