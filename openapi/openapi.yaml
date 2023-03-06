@@ -63,6 +63,35 @@ paths:
           headers:
             Allow:
               $ref: '#/components/headers/Allow'
+    post:
+      summary: Añade una nueva plataforma
+      description: |
+        La siguiente tabla define los códigos de estado que puede devolver este endpoint
+        
+        | Status Code | Descripción          | Motivo                                    |
+        | ------------| ---------------------| ------------------------------------------|
+        | **201**     | CREATED              | La plataforma ha sido creada              |
+        | **400**     | BAD REQUEST          | El identificador único ya existe          |
+        | **422**     | UNPROCESSABLE ENTITY | Falta alguno de los atributos obligatorios|
+        |             |                      | o el valor no está permitido              |
+      tags: [ '🛬 Plataforma' ]
+      operationId: plataformas_post
+      requestBody:
+        $ref: '#/components/requestBodies/plataformaRB'
+      responses:
+        '201':
+          description: Nueva Plataforma creada
+          headers:
+            Location:
+              $ref: '#/components/headers/Location'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Plataforma'
+        '400':
+          $ref: '#/components/responses/Response_400'
+        '422':
+          $ref: '#/components/responses/Response_422'
 
   /plataforma/{plataformaId}:
     parameters:
@@ -198,6 +227,7 @@ components:
         * `Reservada`: Plataforma reservada para próxima utilización
         * `Inhabilitada`: Plataforma inhabilitada para su uso
       type: string
+      default: "Inhabilitada"
       enum: [ "Libre", "Ocupada", "Reservada", "Inhabilitada" ]
       # https://v6.fakerjs.dev/guide/
       x-faker: helpers.arrayElement([ 'Libre', 'Ocupada', 'Reservada', 'Inhabilitada' ])
@@ -252,7 +282,33 @@ components:
         example:
           https://example.com/api/v1/plataformas/1936
 
+  requestBodies:
+    plataformaRB:
+      description: Información de la nueva Plataforma
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required: [ id, tipo_envergadura ]
+            properties:
+              id:
+                $ref: '#/components/schemas/Id_Plataforma'
+              tipo_envergadura:
+                $ref: '#/components/schemas/Envergadura_Aeronave'
+              estado:
+                $ref: '#/components/schemas/Estados_Plataformas'
+
   responses:
+    Response_400:
+      description: '`BAD REQUEST` El identificador único ya existe.'
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/HTTP_Problem'
+          examples:
+            response-http-400:
+              $ref: '#/components/examples/response-http-400'
     Response_404:
       description: '`NOT FOUND`: recurso no disponible'
       content:
@@ -261,7 +317,16 @@ components:
             $ref: '#/components/schemas/HTTP_Problem'
           examples:
             response-http-404:
-              $ref: '#/components/examples/example-response-http-404'
+              $ref: '#/components/examples/response-http-404'
+    Response_422:
+      description: '`UNPROCESSABLE ENTITY` Falta alguno de los atributos obligatorios o son incorrectos.'
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/HTTP_Problem'
+          examples:
+            response-http-422:
+              $ref: '#/components/examples/response-http-422'
 
   parameters:
     plataformaId:
@@ -280,17 +345,32 @@ components:
         type: string
         pattern: "[0-9a-f]*"
 
-
   examples:
-    example-response-http-404:
+    plataformas-example:
+      value:
+        plataformas:
+          - { "plataforma": { "id": "P01-001-A", "tipo_envergadura": "C", "estado": "Reservada"} }
+          - { "plataforma": { "id": "P02-039-C", "tipo_envergadura": "E", "estado": "Libre"} }
+
+    response-http-400:
+      value:
+        type: https://httpstatuses.com/400
+        title: UNPROCESSABLE ENTITY
+        status: 400
+        detail: El identificador único ya existe
+        instance: about:blank
+    response-http-404:
       value:
         type: https://httpstatuses.com/404
         title: NOT FOUND
         status: 404
         detail: El recurso solicitado no está disponible.
         instance: about:blank
-    plataformas-example:
+
+    response-http-422:
       value:
-        plataformas:
-          - { "plataforma": { "id": "P01-001-A", "tipo_envergadura": "C", "estado": "Reservada"} }
-          - { "plataforma": { "id": "P02-039-C", "tipo_envergadura": "E", "estado": "Libre"} }
+        type: https://httpstatuses.com/422
+        title: UNPROCESSABLE ENTITY
+        status: 422
+        detail: Falta alguno de los atributos obligatorios o contiene un valor no admitido
+        instance: about:blank
