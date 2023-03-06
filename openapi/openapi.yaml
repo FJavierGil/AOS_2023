@@ -75,7 +75,7 @@ paths:
         | **422**     | UNPROCESSABLE ENTITY | Falta alguno de los atributos obligatorios|
         |             |                      | o el valor no está permitido              |
       tags: [ '🛬 Plataforma' ]
-      operationId: plataformas_post
+      operationId: plataforma_post
       requestBody:
         $ref: '#/components/requestBodies/plataformaRB'
       responses:
@@ -146,7 +146,37 @@ paths:
           description: Plataforma eliminada &lt;Cuerpo de la respuesta vacío&gt;
         '404':
           $ref: '#/components/responses/Response_404'
+    put:
+      tags: [ '🛬 Plataforma' ]
+      summary: Modifica la plataforma identificada por `plataformaId`.
+      description:  |
+        La siguiente tabla define los códigos de estado que puede devolver este endpoint
 
+        | Status Code | Descripción         | Motivo                                        |
+        | ------------| --------------------| ----------------------------------------------|
+        | **209**     | CONTENT RETURNED    | La plataforma existía y ha sido actualizada   |
+        | **404**     | NOT FOUND           | Si la plataforma no existe                    |
+        | **412**     | PRECONDITION FAILED | Si el ETag proporcionado no está actualizado  |
+        | **422**     | UNPROCESSABLE ENTITY| Valor no permitido en alguno de los attributos|
+      operationId: plataforma_put
+      parameters:
+        # https://www.rfc-editor.org/rfc/rfc7232.html#page-13
+        - $ref: '#/components/parameters/ifMatchParam'
+      requestBody:
+        $ref: '#/components/requestBodies/plataformaUpdate'
+      responses:
+        '209':
+          description: '`CONTENT RETURNED`: la Plataforma ha sido actualizada'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Plataforma'
+        '404':
+          $ref: '#/components/responses/Response_404'
+        '412':
+          $ref: '#/components/responses/Response_412'
+        '422':
+          $ref: '#/components/responses/Response_422'
 
 components:
   schemas:
@@ -298,6 +328,18 @@ components:
                 $ref: '#/components/schemas/Envergadura_Aeronave'
               estado:
                 $ref: '#/components/schemas/Estados_Plataformas'
+    plataformaUpdate:
+      description: Atributos de la Plataforma
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              tipo_envergadura:
+                $ref: '#/components/schemas/Envergadura_Aeronave'
+              estado:
+                $ref: '#/components/schemas/Estados_Plataformas'
 
   responses:
     Response_400:
@@ -318,6 +360,15 @@ components:
           examples:
             response-http-404:
               $ref: '#/components/examples/response-http-404'
+    Response_412:
+      description: '`PRECONDITION FAILED`: El ETag proporcionado no está actualizado'
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/HTTP_Problem'
+          examples:
+            response-http-412:
+              $ref: '#/components/examples/response-http-412'
     Response_422:
       description: '`UNPROCESSABLE ENTITY` Falta alguno de los atributos obligatorios o son incorrectos.'
       content:
@@ -366,7 +417,13 @@ components:
         status: 404
         detail: El recurso solicitado no está disponible.
         instance: about:blank
-
+    response-http-412:
+      value:
+        type: https://httpstatuses.com/412
+        title: PRECONDITION FAILED
+        status: 412
+        detail: El ETag proporcionado no está actualizado
+        instance: about:blank
     response-http-422:
       value:
         type: https://httpstatuses.com/422
