@@ -4,9 +4,11 @@ info:
   title: 🛬[AOS 2023] Plataformas y Aeronaves 🛫
   description: >
     ## **[AOS 2023]** ✈️ API REST para la gestión de Plataformas y Aeronaves.
+servers:
+  - url: http://127.0.0.1:80/api/v1
 
 paths:
-  /api/v1/plataformas:
+  /plataforma:
     get:
       summary: Obtiene todas las plataformas
       description: |
@@ -42,6 +44,20 @@ paths:
       summary: Proporciona la lista de los métodos HTTP soportados por esta ruta.
       description: Devuelve una cabecera `Allow` con la lista de métodos HTTP soportados (separados por comas).
       operationId: plataforma_coptions
+      responses:
+        '204':
+          description: 'cabecera `Allow` &lt;El cuerpo de la respuesta está vacío&gt;'
+          headers:
+            Allow:
+              $ref: '#/components/headers/Allow'
+
+  /plataforma/{plataformaId}:
+    parameters:
+      - $ref: '#/components/parameters/plataformaId'
+    options:
+      summary: Proporciona la lista de los métodos HTTP soportados por esta ruta.
+      description: Devuelve una cabecera `Allow` con la lista de métodos HTTP soportados (separados por comas).
+      operationId: plataforma_options
       responses:
         '204':
           description: 'cabecera `Allow` &lt;El cuerpo de la respuesta está vacío&gt;'
@@ -166,8 +182,6 @@ components:
       schema:
         type: string
         pattern: "[0-9a-f]*"
-        # https://v6.fakerjs.dev/guide/
-        x-faker: datatype.uuid()
         example:
           33a64df551425fcc
     Allow:
@@ -194,6 +208,24 @@ components:
           examples:
             response-http-404:
               $ref: '#/components/examples/example-response-http-404'
+
+  parameters:
+    plataformaId:
+      name: plataformaId
+      in: path
+      description: Identificador único de la Plataforma
+      required: true
+      schema:
+        $ref: '#/components/schemas/Id_Plataforma'
+    ifMatchParam:
+      name: If-Match
+      in: header
+      description: ETag del recurso que se desea modificar
+      required: true
+      schema:
+        type: string
+        pattern: "[0-9a-f]*"
+
 
   examples:
     example-response-http-404:
