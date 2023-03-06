@@ -1,9 +1,17 @@
 openapi: 3.0.3
 info:
-  version: 0.1.0
+  version: 1.0.0
   title: 🛬[AOS 2023] Plataformas y Aeronaves 🛫
   description: >
     ## **[AOS 2023]** ✈️ API REST para la gestión de Plataformas y Aeronaves.
+  license:
+    name: MIT
+    url: 'https://opensource.org/licenses/MIT'
+  contact:
+    name: Máster Universitario en Ingeniería Web
+    url: 'https://miw.etsisi.upm.es/'
+    email: miw.etsisi@upm.es
+
 servers:
   - url: http://127.0.0.1:80/api/v1
 
@@ -64,6 +72,28 @@ paths:
           headers:
             Allow:
               $ref: '#/components/headers/Allow'
+    get:
+      summary: Obtiene una plataforma identificada por `plataformaId`
+      description: |
+        La siguiente tabla define los códigos de estado que puede devolver este endpoint
+        
+        | Status Code | Descripción | Motivo                             |
+        | ------------| ------------| -----------------------------------|
+        | **200**     | OK          | Si la plataforma existe            |
+        | **404**     | NOT FOUND   | Si no existe la plataforma         |
+      operationId: plataforma_get
+      responses:
+        '200':
+          description: Plataforma
+          headers:
+            ETag:
+              $ref: '#/components/headers/ETag'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Plataforma'
+        '404':
+          $ref: '#/components/responses/Response_404'
 
 components:
   schemas:
@@ -172,9 +202,9 @@ components:
         instance:
           type: string
           format: uri
-          description: "A URI reference that identifies the specific
-            occurrence of the problem.  It may or may not yield further
-            information if dereferenced"
+          description: >
+            A URI reference that identifies the specific occurrence of the problem.
+            It may or may not yield further information if dereferenced.
 
   headers:
     ETag:
