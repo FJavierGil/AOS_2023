@@ -180,6 +180,153 @@ paths:
         '422':
           $ref: '#/components/responses/Response_422'
 
+# >>>>>>>>>>> aeronaves
+  /aeronave:
+    get:
+      summary: Obtiene todas las aeronaves
+      description: |
+        La siguiente tabla define los códigos de estado que puede devolver este endpoint
+        
+        | Status Code | Descripción | Motivo                             |
+        | ------------| ------------| -----------------------------------|
+        | **200**     | OK          | Listado de aeronaves             |
+        | **404**     | NOT FOUND   | No hay ninguna aeronave          |
+      operationId: aeronave_cget
+      tags: [ '🛩️ Aeronave' ]
+      responses:
+        '200':
+          description: Lista de aeronaves disponibles
+          headers:
+            ETag:
+              $ref: '#/components/headers/ETag'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  aeronaves:
+                    description: array de aeronaves
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Aeronave'
+              examples:
+                aeronaves-example:
+                  $ref: '#/components/examples/aeronaves-example'
+        '404':
+          $ref: '#/components/responses/Response_404'
+    options:
+      summary: Proporciona la lista de los métodos HTTP soportados por esta ruta.
+      description: Devuelve una cabecera `Allow` con la lista de métodos HTTP soportados (separados por comas).
+      operationId: aeronave_coptions
+      tags: [ '🛩️ Aeronave' ]
+      responses:
+        '204':
+          description: 'cabecera `Allow` &lt;El cuerpo de la respuesta está vacío&gt;'
+          headers:
+            Allow:
+              $ref: '#/components/headers/Allow'
+    post:
+      summary: Añade una nueva aeronave
+      description: |
+        La siguiente tabla define los códigos de estado que puede devolver este endpoint
+        
+        | Status Code | Descripción          | Motivo                                    |
+        | ------------| ---------------------| ------------------------------------------|
+        | **201**     | CREATED              | La aeronave ha sido creada              |
+        | **400**     | BAD REQUEST          | El identificador único ya existe          |
+        | **422**     | UNPROCESSABLE ENTITY | Falta alguno de los atributos obligatorios|
+        |             |                      | o el valor no está permitido              |
+      tags: [ '🛩️ Aeronave' ]
+      operationId: aeronave_post
+      requestBody:
+        $ref: '#/components/requestBodies/aeronaveRB'
+      responses:
+        '201':
+          description: Nueva Aeronave creada
+          headers:
+            Location:
+              $ref: '#/components/headers/Location'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Aeronave'
+        '400':
+          $ref: '#/components/responses/Response_400'
+        '422':
+          $ref: '#/components/responses/Response_422'
+
+  /aeronave/{aeronaveId}:
+    parameters:
+      - $ref: '#/components/parameters/aeronaveId'
+    options:
+      summary: Proporciona la lista de los métodos HTTP soportados por esta ruta.
+      description: Devuelve una cabecera `Allow` con la lista de métodos HTTP soportados (separados por comas).
+      operationId: aeronave_options
+      tags: [ '🛩️ Aeronave' ]
+      responses:
+        '204':
+          description: 'cabecera `Allow` &lt;El cuerpo de la respuesta está vacío&gt;'
+          headers:
+            Allow:
+              $ref: '#/components/headers/Allow'
+    get:
+      summary: Obtiene una aeronave identificada por `aeronaveId`
+      description: |
+        La siguiente tabla define los códigos de estado que puede devolver este endpoint
+        
+        | Status Code | Descripción | Motivo                             |
+        | ------------| ------------| -----------------------------------|
+        | **200**     | OK          | Si la aeronave existe            |
+        | **404**     | NOT FOUND   | Si no existe la aeronave         |
+      operationId: aeronave_get
+      tags: [ '🛩️ Aeronave' ]
+      responses:
+        '200':
+          description: Aeronave
+          headers:
+            ETag:
+              $ref: '#/components/headers/ETag'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Aeronave'
+        '404':
+          $ref: '#/components/responses/Response_404'
+    put:
+      tags: [ '🛩️ Aeronave' ]
+      summary: Modifica la aeronave identificada por `aeronaveId`.
+      description:  |
+        La siguiente tabla define los códigos de estado que puede devolver este endpoint
+
+        | Status Code | Descripción         | Motivo                                        |
+        | ------------| --------------------| ----------------------------------------------|
+        | **209**     | CONTENT RETURNED    | La aeronave existía y ha sido actualizada   |
+        | **404**     | NOT FOUND           | Si la aeronave no existe                    |
+        | **412**     | PRECONDITION FAILED | Si el ETag proporcionado no está actualizado  |
+        | **422**     | UNPROCESSABLE ENTITY| Valor no permitido en alguno de los attributos|
+      operationId: aeronave_put
+      parameters:
+        # https://www.rfc-editor.org/rfc/rfc7232.html#page-13
+        - $ref: '#/components/parameters/ifMatchParam'
+      requestBody:
+        $ref: '#/components/requestBodies/aeronaveUpdate'
+      responses:
+        '209':
+          description: '`CONTENT RETURNED`: la Aeronave ha sido actualizada'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Aeronave'
+        '404':
+          $ref: '#/components/responses/Response_404'
+        '412':
+          $ref: '#/components/responses/Response_412'
+        '422':
+          $ref: '#/components/responses/Response_422'
+
+
+# <<<<<<<<<<< aeronaves
+
 components:
   schemas:
     Plataforma:
@@ -330,6 +477,22 @@ components:
                 $ref: '#/components/schemas/Envergadura_Aeronave'
               estado:
                 $ref: '#/components/schemas/Estados_Plataformas'
+    aeronaveRB:
+      description: Información de la nueva Aeronave
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              matrícula:
+                description: Matrícula de la aeronave
+                type: string
+                pattern: "^[A-Z]{1,2}-[A-Z]{3}$"
+                example: "EC-JGR"
+              envergadura:
+                $ref: '#/components/schemas/Envergadura_Aeronave'
+          example: { "aeronave": { "matrícula": "EC-JGR", "envergadura": "B" }}
     plataformaUpdate:
       description: Atributos de la Plataforma
       required: true
@@ -342,6 +505,22 @@ components:
                 $ref: '#/components/schemas/Envergadura_Aeronave'
               estado:
                 $ref: '#/components/schemas/Estados_Plataformas'
+    aeronaveUpdate:
+      description: Atributos de la Aeronave
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              matrícula:
+                description: Matrícula de la aeronave
+                type: string
+                pattern: "^[A-Z]{1,2}-[A-Z]{3}$"
+                example: "EC-JGR"
+              envergadura:
+                $ref: '#/components/schemas/Envergadura_Aeronave'
+          example: { "aeronave": { "matrícula": "EC-JGR", "envergadura": "B" }}
 
   responses:
     Response_400:
@@ -389,6 +568,16 @@ components:
       required: true
       schema:
         $ref: '#/components/schemas/Id_Plataforma'
+    aeronaveId:
+      name: aeronaveId
+      in: path
+      description: Identificador único de la Aeronave
+      required: true
+      schema:
+        description: Matrícula de la aeronave
+        type: string
+        pattern: "^[A-Z]{1,2}-[A-Z]{3}$"
+        example: "EC-JGR"
     ifMatchParam:
       name: If-Match
       in: header
@@ -404,6 +593,11 @@ components:
         plataformas:
           - { "plataforma": { "id": "P01-001-A", "tipo_envergadura": "C", "estado": "Reservada"} }
           - { "plataforma": { "id": "P02-039-C", "tipo_envergadura": "E", "estado": "Libre"} }
+    aeronaves-example:
+      value:
+        aeronaves:
+          - { "aeronave":  { "matrícula": "EC-JGR", "envergadura": "B" } }
+          - { "aeronave": { "matrícula": "EC-HRX", "envergadura": "F" } }
 
     response-http-400:
       value:
