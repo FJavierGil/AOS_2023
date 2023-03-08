@@ -21,7 +21,7 @@ tags:
     description: Aeronave
 
 paths:
-  /plataforma:
+  /plataformas:
     get:
       summary: Obtiene todas las plataformas
       description: |
@@ -95,7 +95,7 @@ paths:
         '422':
           $ref: '#/components/responses/Response_422'
 
-  /plataforma/{plataformaId}:
+  /plataformas/{plataforma_id}:
     parameters:
       - $ref: '#/components/parameters/plataformaId'
     options:
@@ -181,7 +181,7 @@ paths:
           $ref: '#/components/responses/Response_422'
 
 # >>>>>>>>>>> aeronaves
-  /aeronave:
+  /aeronaves:
     get:
       summary: Obtiene todas las aeronaves
       description: |
@@ -232,7 +232,7 @@ paths:
         
         | Status Code | Descripción          | Motivo                                    |
         | ------------| ---------------------| ------------------------------------------|
-        | **201**     | CREATED              | La aeronave ha sido creada              |
+        | **201**     | CREATED              | La aeronave ha sido creada                |
         | **400**     | BAD REQUEST          | El identificador único ya existe          |
         | **422**     | UNPROCESSABLE ENTITY | Falta alguno de los atributos obligatorios|
         |             |                      | o el valor no está permitido              |
@@ -255,7 +255,7 @@ paths:
         '422':
           $ref: '#/components/responses/Response_422'
 
-  /aeronave/{aeronaveId}:
+  /aeronaves/{aeronave_id}:
     parameters:
       - $ref: '#/components/parameters/aeronaveId'
     options:
@@ -330,7 +330,7 @@ paths:
 components:
   schemas:
     Plataforma:
-      title: Plataforma de estacionamiento de Aeronaves
+      title: '🛬 Plataforma de estacionamiento de Aeronaves'
       description: >
         Área definida, en un aeródromo terrestre, destinada a dar cabida a
         las aeronaves para los fines de embarque o desembarque del pasaje,
@@ -358,6 +358,7 @@ components:
         Toda máquina que puede desplazarse en la atmósfera por reacciones del aire que
         no sean las reacciones del mismo contra la superficie de la tierra.<br>
         OACI - Organización de Aviación Civil Internacional
+      title: '🛩️ Aeronave'
       type: object
       properties:
         aeronave:
@@ -492,9 +493,9 @@ components:
                 example: "EC-JGR"
               envergadura:
                 $ref: '#/components/schemas/Envergadura_Aeronave'
-          example: { "aeronave": { "matrícula": "EC-JGR", "envergadura": "B" }}
+          example: { "matrícula": "EC-JGR", "envergadura": "B" }
     plataformaUpdate:
-      description: Atributos de la Plataforma
+      description: Nuevos atributos de la Plataforma
       required: true
       content:
         application/json:
@@ -505,8 +506,9 @@ components:
                 $ref: '#/components/schemas/Envergadura_Aeronave'
               estado:
                 $ref: '#/components/schemas/Estados_Plataformas'
+          example: { "tipo_envergadura": "B", "estado": "Libre" }
     aeronaveUpdate:
-      description: Atributos de la Aeronave
+      description: Nuevos atributos de la Aeronave
       required: true
       content:
         application/json:
@@ -520,7 +522,7 @@ components:
                 example: "EC-JGR"
               envergadura:
                 $ref: '#/components/schemas/Envergadura_Aeronave'
-          example: { "aeronave": { "matrícula": "EC-JGR", "envergadura": "B" }}
+          example: { "matrícula": "EC-JGR", "envergadura": "B" }
 
   responses:
     Response_400:
@@ -562,14 +564,14 @@ components:
 
   parameters:
     plataformaId:
-      name: plataformaId
+      name: plataforma_id
       in: path
       description: Identificador único de la Plataforma
       required: true
       schema:
         $ref: '#/components/schemas/Id_Plataforma'
     aeronaveId:
-      name: aeronaveId
+      name: aeronave_id
       in: path
       description: Identificador único de la Aeronave
       required: true
@@ -581,7 +583,7 @@ components:
     ifMatchParam:
       name: If-Match
       in: header
-      description: ETag del recurso que se desea modificar
+      description: ETag actual del recurso que se desea modificar
       required: true
       schema:
         type: string
