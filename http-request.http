@@ -1,0 +1,101 @@
+###
+# CGET 200
+GET http://127.0.0.1:80/plataformas
+Accept: application/json
+
+###
+# GET ERROR 422 (validación parámetros)
+GET http://127.0.0.1:80/plataformas/abcd
+Accept: application/json
+
+###
+# GET 200
+GET http://127.0.0.1:80/plataformas/P98-057-D
+Accept: application/json
+
+###
+# DELETE 204
+DELETE http://127.0.0.1:80/plataformas/P19-386-X
+Accept: application/json
+
+###
+# POST 201
+POST http://127.0.0.1:80/plataformas
+Content-Type: application/json
+
+{
+  "id": "P01-001-A",
+  "tipo_envergadura": "A",
+  "estado": "Inhabilitada"
+}
+
+###
+# COPTIONS 204
+OPTIONS http://127.0.0.1:80/plataformas
+Content-Type: application/json
+
+###
+# OPTIONS 204
+OPTIONS http://127.0.0.1:80/plataformas/P23-019-E
+Content-Type: application/json
+
+###
+# POST 201 (dinámico)
+POST http://127.0.0.1:80/plataformas
+Prefer: dynamic=true
+Content-Type: application/json
+
+{
+  "id": "P23-019-E",
+  "tipo_envergadura": "A",
+  "estado": "Libre"
+}
+
+###
+# PUT 422 (dinámico) - Falta cabecera If-Match
+PUT http://127.0.0.1:80/plataformas/P23-019-E
+Prefer: dynamic=true
+Content-Type: application/json
+
+{
+  "estado": "Ocupada"
+}
+
+###
+# PUT 209 (dinámico)
+PUT http://127.0.0.1:80/plataformas/P23-019-E
+If-Match: abcde12345
+Prefer: dynamic=true
+Content-Type: application/json
+
+{
+  "estado": "Ocupada"
+}
+
+###
+# CGET 404
+GET http://127.0.0.1:80/plataformas
+Prefer: code=404
+
+###
+# POST 422
+POST http://127.0.0.1:80/plataformas
+Content-Type: application/json
+
+{
+  "XXXid": "P01-001-A",
+  "tipo_envergadura": "A",
+  "estado": "Inhabilitada"
+}
+
+###
+# PUT 404 (dinámico) - Not Found
+PUT http://127.0.0.1:80/plataformas/P01-001-A
+If-Match: a1b2c3d4e5f6
+Prefer: code=404
+Content-Type: application/json
+
+{
+  "tipo_envergadura": "A",
+  "estado": "Inhabilitada"
+}

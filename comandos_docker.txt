@@ -36,3 +36,10 @@ docker run --rm `
 docker run -it --rm `
     -v C:\Xampp\htdocs\AOS\AOS_2023\openapi:/aos `
     redocly/cli split /aos/openapi.yaml --outDir /aos/multiFile
+
+# STOPLIGHT-PRISM
+=============================================================================
+# url: https://meta.stoplight.io/docs/prism/README.md
+docker run --init --rm -it -p 80:4010 --name aos2023_mock `
+    -v C:\xampp\htdocs\AOS\AOS_2023\openapi:/aos `
+    stoplight/prism:4 mock --cors -h 0.0.0.0 "/aos/openapi.yaml"
