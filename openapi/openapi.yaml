@@ -19,7 +19,8 @@ tags:
     description: Plataforma
   - name: '🛩️ Aeronave'
     description: Aeronave
-
+  - name: '📋 Reserva'
+    description: Reserva
 paths:
   /plataformas:
     get:
@@ -180,7 +181,6 @@ paths:
         '422':
           $ref: '#/components/responses/Response_422'
 
-# >>>>>>>>>>> aeronaves
   /aeronaves:
     get:
       summary: Obtiene todas las aeronaves
@@ -324,8 +324,47 @@ paths:
         '422':
           $ref: '#/components/responses/Response_422'
 
-
-# <<<<<<<<<<< aeronaves
+  /reservas/{plataforma_id}/{aeronave_id}:
+    parameters:
+      - $ref: '#/components/parameters/plataformaId'
+      - $ref: '#/components/parameters/aeronaveId'
+    post:
+      summary: Añade una nueva reserva de una plataforma para una aeronave concreta
+      description: |
+        La siguiente tabla define los códigos de estado que puede devolver este endpoint
+        
+        | Status Code | Descripción          | Motivo                                    |
+        | ------------| ---------------------| ------------------------------------------|
+        | **201**     | CREATED              | La reserv ha sido creada                  |
+        | **404**     | BAD REQUEST          | El identificador de plataforma o aeronave no existe          |
+        | **409**     | CONFLICT             | La plataforma no está Libre               |
+      tags: [ '📋 Reserva', '🛬 Plataforma', '🛩️ Aeronave' ]
+      operationId: reserva_post
+      responses:
+        '201':
+          description: Nueva reserva creada
+          headers:
+            Location:
+              $ref: '#/components/headers/Location'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Reserva'
+        '404':
+          $ref: '#/components/responses/Response_404'
+        '409':
+          $ref: '#/components/responses/Response_409'
+    options:
+      summary: Proporciona la lista de los métodos HTTP soportados por esta ruta.
+      description: Devuelve una cabecera `Allow` con la lista de métodos HTTP soportados (separados por comas).
+      operationId: aeronave_coptions
+      tags: [ '📋 Reserva', '🛬 Plataforma', '🛩️ Aeronave' ]
+      responses:
+        '204':
+          description: 'cabecera `Allow` &lt;El cuerpo de la respuesta está vacío&gt;'
+          headers:
+            Allow:
+              $ref: '#/components/headers/Allow'
 
 components:
   schemas:
@@ -375,6 +414,23 @@ components:
       example: { "aeronave": { "matrícula": "EC-JGR", "envergadura": "B" }}
       # https://v6.fakerjs.dev/guide/
       x-faker: helpers.regexpStyleStringParse('P[10-99]-[100-999]-X')
+
+    Reserva:
+      title: '📋 Reserva de una plataforma para una aeronave'
+      type: object
+      properties:
+        reserva:
+          type: object
+          required: [ id_plataforma, id_aeronave ]
+          properties:
+            id_plataforma:
+              $ref: '#/components/schemas/Id_Plataforma'
+            id_aeronave:
+              description: Matrícula de la aeronave
+              type: string
+              pattern: "^[A-Z]{1,2}-[A-Z]{3}$"
+              example: "EC-JGR"
+      example: { "reserva": { "id_plataforma":"P03-567-Z", "id_aeronave":"EC-XYZ" } }
 
     Id_Plataforma:
       title: Identificador único de la plataforma
@@ -543,6 +599,15 @@ components:
           examples:
             response-http-404:
               $ref: '#/components/examples/response-http-404'
+    Response_409:
+      description: '`CONFLICT`: el recurso no reúne las condiciones adecuadas'
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/HTTP_Problem'
+          examples:
+            response-http-404:
+              $ref: '#/components/examples/response-http-409'
     Response_412:
       description: '`PRECONDITION FAILED`: El ETag proporcionado no está actualizado'
       content:
@@ -614,6 +679,13 @@ components:
         title: NOT FOUND
         status: 404
         detail: El recurso solicitado no está disponible.
+        instance: about:blank
+    response-http-409:
+      value:
+        type: https://httpstatuses.com/409
+        title: NOT FOUND
+        status: 409
+        detail: El recurso no reúne las condiciones requeridas para la operación.
         instance: about:blank
     response-http-412:
       value:
