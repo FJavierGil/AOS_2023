@@ -242,5 +242,5 @@
       "message": "Path parameters should be defined on the path level instead of the operation level."
     }
   },
-  "functionsDir": "functions"
+  "functionsDir": "./functions"
 }
