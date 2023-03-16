@@ -14,7 +14,7 @@ info:
     email: miw.etsisi@upm.es
 
 servers:
-  - url: http://127.0.0.1:80/api/v1/
+  - url: http://127.0.0.1:80/api/v1
 
 tags:
   - name: '🛬 Plataforma'
@@ -37,6 +37,10 @@ paths:
         | **404**     | NOT FOUND   | No hay ninguna plataforma          |
       operationId: plataforma_cget
       tags: [ '🛬 Plataforma' ]
+      parameters:
+        - $ref: '#/components/parameters/pageParam'
+        - $ref: '#/components/parameters/orderParam'
+        - $ref: '#/components/parameters/orderingParam'
       responses:
         '200':
           description: Lista de plataformas disponibles
@@ -53,6 +57,15 @@ paths:
                     type: array
                     items:
                       $ref: '#/components/schemas/Plataforma'
+                  links:
+                    description: Enlaces de paginación
+                    readOnly: true
+                    type: object
+                    properties:
+                      prevPage:
+                        $ref: '#/components/schemas/Link'
+                      nextPage:
+                        $ref: '#/components/schemas/Link'
               examples:
                 plataformas-example:
                   $ref: '#/components/examples/plataformas-example'
@@ -196,6 +209,8 @@ paths:
         | **404**     | NOT FOUND   | No hay ninguna aeronave          |
       operationId: aeronave_cget
       tags: [ '🛩️ Aeronave' ]
+      parameters:
+        - $ref: '#/components/parameters/pageParam'
       responses:
         '200':
           description: Lista de aeronaves disponibles
@@ -212,6 +227,15 @@ paths:
                     type: array
                     items:
                       $ref: '#/components/schemas/Aeronave'
+                  links:
+                    description: Enlaces de paginación
+                    readOnly: true
+                    type: object
+                    properties:
+                      prevPage:
+                        $ref: '#/components/schemas/Link'
+                      nextPage:
+                        $ref: '#/components/schemas/Link'
               examples:
                 aeronaves-example:
                   $ref: '#/components/examples/aeronaves-example'
@@ -360,7 +384,7 @@ paths:
     options:
       summary: Proporciona la lista de los métodos HTTP soportados por esta ruta.
       description: Devuelve una cabecera `Allow` con la lista de métodos HTTP soportados (separados por comas).
-      operationId: aeronave_coptions
+      operationId: reserva_coptions
       tags: [ '📋 Reserva', '🛬 Plataforma', '🛩️ Aeronave' ]
       responses:
         '204':
@@ -721,6 +745,37 @@ components:
       schema:
         type: string
         pattern: "[0-9a-f]*"
+    orderParam:
+      name: order
+      in: query
+      description: 'Criterio de ordenación: `id` | `tipo_envergadura`'
+      required: false
+      allowEmptyValue: false
+      schema:
+        type: string
+        enum:
+          - id
+          - tipo_envergadura
+    orderingParam:
+      name: ordering
+      in: query
+      description: 'Ordenación: `ASC` | `DESC`'
+      required: false
+      allowEmptyValue: false
+      schema:
+        type: string
+        enum:
+          - ASC
+          - DESC
+    pageParam:
+      name: page
+      in: query
+      description: 'Número de página'
+      required: false
+      allowEmptyValue: false
+      schema:
+        type: integer
+        minimum: 1
 
   examples:
     plataformas-example:
@@ -736,6 +791,10 @@ components:
                   "parent": { "href": "https://example.com/api/v1/plataformas", "rel": "plataforma_post plataforma_cget"},
                   "self": { "href": "https://example.com/api/v1/plataformas/P02-039-C", "rel": "plataforma_get plataforma_delete plataforma_put" }
               }}}
+        links: {
+          "prevPage": { "href": "https://example.com/api/v1/plataformas?page=2", "rel": "prevPage" },
+          "nextPage": { "href": "https://example.com/api/v1/plataformas?page=4", "rel": "nextPage" }
+        }
 
     aeronaves-example:
       value:
@@ -750,6 +809,10 @@ components:
                   "parent": { "href": "https://example.com/api/v1/aeronaves", "rel": "aeronave_post aeronave_cget"},
                   "self": { "href": "https://example.com/api/v1/aeronaves/EC-HRX", "rel": "aeronave_get aeronave_put" }
                 }}}
+        links: {
+          "prevPage": { "href": "https://example.com/api/v1/aeronaves?page=6", "rel": "prevPage" },
+          "nextPage": { "href": "https://example.com/api/v1/aeronaves?page=8", "rel": "nextPage" }
+        }
 
     response-http-400:
       value:
