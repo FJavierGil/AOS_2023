@@ -1,4 +1,5 @@
 openapi: 3.0.3
+
 info:
   version: 1.0.0
   title: 🛬[AOS 2023] Plataformas y Aeronaves 🛫
@@ -13,7 +14,8 @@ info:
     email: miw.etsisi@upm.es
 
 servers:
-  - url: http://127.0.0.1:80/api/v1
+  - url: http://127.0.0.1:80/api/v1/
+
 tags:
   - name: '🛬 Plataforma'
     description: Plataforma
@@ -21,6 +23,7 @@ tags:
     description: Aeronave
   - name: '📋 Reserva'
     description: Reserva
+
 paths:
   /plataformas:
     get:
@@ -390,7 +393,31 @@ components:
             estado:
               $ref: '#/components/schemas/Estados_Plataformas'
             # Añadir resto de propiedades
-      example: { "plataforma": { "id": "P01-001-A", "tipo_envergadura": "C", "estado": "Reservada"}}
+            links:
+              description: Enlaces de relación de la Plataforma
+              readOnly: true
+              type: object
+              properties:
+                parent:
+                  $ref: '#/components/schemas/Link'
+                self:
+                  $ref: '#/components/schemas/Link'
+      example: { "plataforma": {
+                     "id": "P02-001-A",
+                     "tipo_envergadura": "C",
+                     "estado": "Reservada",
+                     "links": {
+                       "parent": {
+                         "href": "https://example.com/api/v1/plataformas",
+                         "rel": "plataforma_post plataforma_cget"
+                       },
+                       "self": {
+                          "href": "https://example.com/api/v1/plataformas/P01-123-Z",
+                          "rel": "plataforma_get plataforma_delete plataforma_put"
+                       }
+                     }
+                  }
+                }
 
     Aeronave:
       description: >
@@ -409,11 +436,33 @@ components:
               type: string
               pattern: "^[A-Z]{1,2}-[A-Z]{3}$"
               example: "EC-JGR"
+              # https://v6.fakerjs.dev/guide/
+              x-faker: helpers.regexpStyleStringParse('^[A-Z]{1,2}-[A-Z]{3}$')
             envergadura:
               $ref: '#/components/schemas/Envergadura_Aeronave'
-      example: { "aeronave": { "matrícula": "EC-JGR", "envergadura": "B" }}
-      # https://v6.fakerjs.dev/guide/
-      x-faker: helpers.regexpStyleStringParse('P[10-99]-[100-999]-X')
+            links:
+              description: Enlaces de relación de la Aeronave
+              readOnly: true
+              type: object
+              properties:
+                parent:
+                  $ref: '#/components/schemas/Link'
+                self:
+                  $ref: '#/components/schemas/Link'
+      example: { "aeronave": {
+        "matrícula": "EC-JGR",
+        "envergadura": "B",
+        "links": {
+          "parent": {
+            "href": "https://example.com/api/v1/aeronaves",
+            "rel": "aeronave_post aeronave_cget"
+          },
+          "self": {
+            "href": "https://example.com/api/v1/aeronaves/EC-ESP",
+            "rel": "aeronave_get aeronave_put"
+          }
+        }
+      } }
 
     Reserva:
       title: '📋 Reserva de una plataforma para una aeronave'
@@ -496,6 +545,25 @@ components:
             A URI reference that identifies the specific occurrence of the problem.
             It may or may not yield further information if dereferenced.
 
+    Link:
+      description: Enlace de relación
+      title: '🔗 Link'
+      type: object
+      properties:
+        href:
+          description: URL del enlace
+          type: string
+          format: uri
+          x-faker: internet.url
+        rel:
+          description: "Relación del recurso enlazado con el actual. Contiene una lista de tipos
+                    de relaciones separados por espacio."
+          type: string
+          x-faker: lorem.words
+      example:
+        href: https://www.example.com/path/resource
+        rel: relAction1 relAction2
+
   headers:
     ETag:
       description: "Entity Tag (identificador único proporcionado para validación de caché)"
@@ -516,7 +584,7 @@ components:
         format: uri
         x-faker: internet.url
         example:
-          https://example.com/api/v1/plataformas/1936
+          https://example.com/api/v1/plataformas/P01-001-A
 
   requestBodies:
     plataformaRB:
@@ -658,13 +726,30 @@ components:
     plataformas-example:
       value:
         plataformas:
-          - { "plataforma": { "id": "P01-001-A", "tipo_envergadura": "C", "estado": "Reservada"} }
-          - { "plataforma": { "id": "P02-039-C", "tipo_envergadura": "E", "estado": "Libre"} }
+          - { "plataforma": { "id": "P01-001-A", "tipo_envergadura": "C", "estado": "Reservada",
+                "links": {
+                  "parent": { "href": "https://example.com/api/v1/plataformas", "rel": "plataforma_post plataforma_cget"},
+                  "self": { "href": "https://example.com/api/v1/plataformas/P01-001-A", "rel": "plataforma_get plataforma_delete plataforma_put" }
+              }}}
+          - { "plataforma": { "id": "P02-039-C", "tipo_envergadura": "E", "estado": "Libre",
+                "links": {
+                  "parent": { "href": "https://example.com/api/v1/plataformas", "rel": "plataforma_post plataforma_cget"},
+                  "self": { "href": "https://example.com/api/v1/plataformas/P02-039-C", "rel": "plataforma_get plataforma_delete plataforma_put" }
+              }}}
+
     aeronaves-example:
       value:
         aeronaves:
-          - { "aeronave":  { "matrícula": "EC-JGR", "envergadura": "B" } }
-          - { "aeronave": { "matrícula": "EC-HRX", "envergadura": "F" } }
+          - { "aeronave": { "matrícula": "EC-JGR", "envergadura": "B",
+                "links": {
+                  "parent": { "href": "https://example.com/api/v1/aeronaves", "rel": "aeronave_post aeronave_cget"},
+                  "self": { "href": "https://example.com/api/v1/aeronaves/EC-JGR", "rel": "aeronave_get aeronave_put" }
+                }}}
+          - { "aeronave": { "matrícula": "EC-HRX", "envergadura": "F",
+                "links": {
+                  "parent": { "href": "https://example.com/api/v1/aeronaves", "rel": "aeronave_post aeronave_cget"},
+                  "self": { "href": "https://example.com/api/v1/aeronaves/EC-HRX", "rel": "aeronave_get aeronave_put" }
+                }}}
 
     response-http-400:
       value:
